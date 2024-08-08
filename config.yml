@@ -1,0 +1,32 @@
+# See: https://circleci.com/docs/configuration-reference
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
+jobs:
+  list-models:
+    docker:
+      - image: cimg/python:3.12.2
+    steps:
+      - checkout
+      - run:
+          name: "List OpenAI Models"
+          command: |
+            DEFAULT_OPENAI_BASE_URL="https://api.openai.com/v1"
+            curl "${OPENAI_BASE_URL:-$DEFAULT_OPENAI_BASE_URL}/models" \
+            -H "Authorization: Bearer ${OPENAI_API_KEY}"
+
+# Orchestrate jobs using workflows
+# See Docs:
+# - https://circleci.com/docs/workflows/
+# - https://circleci.com/docs/configuration-reference/#workflows
+workflows:
+  open-ai-workflow:
+    jobs:
+      - list-models:
+          # The context where your OPENAI_* variables are defined.
+          # See:
+          # - Docs: https://circleci.com/docs/contexts/
+          # - Context: https://app.circleci.com/settings/organization/circleci/NGS4ivimX9N99H9QzSb7f2/contexts/e30cdb32-48ec-4617-839b-831371cc4c34
+          context:
+            - ai-yapay-zeka
